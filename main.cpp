@@ -1,44 +1,40 @@
 #include <iostream>
 
+#include "source/interfacelib.h"
+#include "source/lzlib.h"
+
 int main(){
-	std::string input="";
-	int exit_flag=1, input_quest=0, buffer_size=4, dictionary_size=8;
+	std::string code_string="";
+	int exit_flag=1, input=0, buffer_size=4, dictionary_size=8;
 
 	do{
-		std::cout<<"curent buffer size "<<buffer_size<<", curent dictionary size "<<dictionary_size<<'\n';
-		while(1){
-			std::cout<<" 1 - change buffer size\n 2 - change dictionary size\n 3 - code LZ77\n 4 - code LZSS\n 5 - code LZ78\n 6 - code LZW\n 7 - exit\n--> ";
-			std::cin>>input;
-			try{
-				input_quest=std::stoi(input);
-			}
-			catch(std::exception){
-				std::cout<<" incorect input.\n \n";
-				continue;
-			}
-			if(input_quest>=1 && input_quest<=7) break;
-		}
+		std::cout<<"\ncurent string - ["<<code_string<<"]\n";
+		std::cout<<"current buffer size "<<buffer_size<<", current dictionary size "<<dictionary_size<<'\n';
+		ilib::inputMenu(input);
 
-		switch(input_quest){
+		switch(input){
 		case 1:
-			//
+			ilib::changeString(code_string);
 			break;
 		case 2:
-			//
+			ilib::changeSize("buffer",buffer_size);
 			break;
 		case 3:
-			//
+			ilib::changeSize("dictionary",dictionary_size);
 			break;
 		case 4:
-			//
+			lzlib::codeLZ77();
 			break;
 		case 5:
-			//
+			lzlib::codeLZSS();
 			break;
 		case 6:
-			//
+			lzlib::codeLZ78();
 			break;
 		case 7:
+			lzlib::codeLZW();
+			break;
+		case 8:
 			--exit_flag;
 			break;
 		}
