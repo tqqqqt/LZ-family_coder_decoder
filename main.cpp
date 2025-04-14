@@ -23,7 +23,7 @@ int main(){
 			ilib::changeSize("dictionary",dictionary_size);
 			break;
 		case 4:
-			lzlib::codeLZ77();
+			lzlib::codeLZ77(code_string,dictionary_size,buffer_size);
 			break;
 		case 5:
 			lzlib::codeLZSS();
