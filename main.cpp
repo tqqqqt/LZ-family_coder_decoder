@@ -30,7 +30,7 @@ int main(){
 				lzlib::codeLZSS(code_string,dictionary_size,buffer_size);
 				break;
 			case 6:
-				lzlib::codeLZ78();
+				lzlib::codeLZ78(code_string);
 				break;
 			case 7:
 				lzlib::codeLZW();
