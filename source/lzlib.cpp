@@ -54,6 +54,7 @@ void lzlib::codeLZSS(const std::string& _str, const int& dict_size, const int& b
 	int buffer_index=0, index=0, count_symb=0;
 	size_t temp=0;
 
+	std::cout<<"Dictionary | Buffer | Code\n";
 	while(buffer_index<static_cast<int>(len)){
 		count_symb=0;
 		index=0;
@@ -71,10 +72,12 @@ void lzlib::codeLZSS(const std::string& _str, const int& dict_size, const int& b
 			break;
 		}
 
+		// output info
 		std::cout<<dict<<'|'<<_str.substr(buffer_index,buffer_size)<<'|';
 		if(count_symb==0) std::cout<<"0,'"<<_str[buffer_index]<<"'\n";
 		else std::cout<<"1,<"<<index<<','<<count_symb<<">\n";
 
+		// added combination to dict
 		if(count_symb==0) count_symb+=1;
 		dict+=_str.substr(buffer_index,count_symb);
 		buffer_index+=count_symb;
@@ -85,7 +88,7 @@ void lzlib::codeLZSS(const std::string& _str, const int& dict_size, const int& b
 	std::cout<<dict<<"| |\n";
 }
 
-void lzlib::codeLZ78(){
+void lzlib::codeLZ78(const std::string& _str){
 	std::cout<<"LZ78";
 }
 
