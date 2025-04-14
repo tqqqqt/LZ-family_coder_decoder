@@ -9,7 +9,7 @@ void lzlib::codeLZ77(const std::string& _str, const int& dict_size, const int& b
 	int buffer_l=0, index=0, count_symb=0;
 	size_t temp=0;
 
-	std::cout<<"Dictionary | Buffer | Code\n";
+	std::cout<<"Dictionary | Buffer | Code LZ77\n";
 	while(buffer_l<static_cast<int>(len)){
 		count_symb=0;
 		index=0;
@@ -54,7 +54,7 @@ void lzlib::codeLZSS(const std::string& _str, const int& dict_size, const int& b
 	int buffer_index=0, index=0, count_symb=0;
 	size_t temp=0;
 
-	std::cout<<"Dictionary | Buffer | Code\n";
+	std::cout<<"Dictionary | Buffer | Code LZSS\n";
 	while(buffer_index<static_cast<int>(len)){
 		count_symb=0;
 		index=0;
@@ -98,7 +98,7 @@ void lzlib::codeLZ78(const std::string& _str){
 	std::string temp_str="";
 	int number_str=1, find_index=0, temp=0;
 
-	std::cout<<"# | Dictionary | Code\n";
+	std::cout<<"# | Dictionary | Code LZ78\n";
 	std::cout<<"0| | --\n";
 	for(size_t i=0;i<len;++i){
 		temp_str+=_str[i];
@@ -127,6 +127,46 @@ void lzlib::codeLZ78(const std::string& _str){
 	if(temp_str.length()!=0 && find_index!=0) std::cout<<number_str<<"| |<"<<find_index<<",'eos'>\n";
 }
 
-void lzlib::codeLZW(){
-	std::cout<<"LZW";
+void lzlib::codeLZW(const std::string& _str){
+	size_t len=_str.length();
+
+	if(len==0) throw "empty string";
+
+	std::vector<std::string> dict;
+	std::string temp_str="";
+	int find_index=0, temp=0, curent_num_str=1;
+
+	std::cout<<"# | Dictionary | Code LZW\n";
+	std::cout<<"0-255|ASCII|--\n";
+	for(size_t i=0;i<len;++i){
+		temp_str+=_str[i];
+		temp=0;
+
+		//skip one symbol combination
+		if(temp_str.length()==1) continue;
+
+		// try find combination in dict
+		for(int j=0;j<dict.size();++j){
+			if(dict[j]!=temp_str) continue;
+			temp=j;
+		}
+
+		if(temp!=0){
+			find_index=temp;
+			continue;
+		}
+
+		// output info
+		std::cout<<255+curent_num_str<<'|'<<temp_str<<'|';
+		if(temp_str.length()==2) std::cout<<"ASCII index of '"<<temp_str[0]<<"'\n";
+		else std::cout<<255+find_index+1<<'\n';
+		
+		// added combination to dictionary
+		dict.push_back(temp_str);
+		temp_str=temp_str.back();
+		find_index=0;
+		++curent_num_str;
+	}
+
+	if(find_index!=0) std::cout<<255+curent_num_str<<"| |"<<255+find_index+1<<'\n';
 }
