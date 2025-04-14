@@ -33,7 +33,7 @@ int main(){
 				lzlib::codeLZ78(code_string);
 				break;
 			case 7:
-				lzlib::codeLZW();
+				lzlib::codeLZW(code_string);
 				break;
 			case 8:
 				--exit_flag;
