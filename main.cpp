@@ -12,31 +12,36 @@ int main(){
 		std::cout<<"current buffer size "<<buffer_size<<", current dictionary size "<<dictionary_size<<'\n';
 		ilib::inputMenu(input);
 
-		switch(input){
-		case 1:
-			ilib::changeString(code_string);
-			break;
-		case 2:
-			ilib::changeSize("buffer",buffer_size);
-			break;
-		case 3:
-			ilib::changeSize("dictionary",dictionary_size);
-			break;
-		case 4:
-			lzlib::codeLZ77(code_string,dictionary_size,buffer_size);
-			break;
-		case 5:
-			lzlib::codeLZSS();
-			break;
-		case 6:
-			lzlib::codeLZ78();
-			break;
-		case 7:
-			lzlib::codeLZW();
-			break;
-		case 8:
-			--exit_flag;
-			break;
+		try{
+			switch(input){
+			case 1:
+				ilib::changeString(code_string);
+				break;
+			case 2:
+				ilib::changeSize("buffer",buffer_size);
+				break;
+			case 3:
+				ilib::changeSize("dictionary",dictionary_size);
+				break;
+			case 4:
+				lzlib::codeLZ77(code_string,dictionary_size,buffer_size);
+				break;
+			case 5:
+				lzlib::codeLZSS(code_string,dictionary_size,buffer_size);
+				break;
+			case 6:
+				lzlib::codeLZ78();
+				break;
+			case 7:
+				lzlib::codeLZW();
+				break;
+			case 8:
+				--exit_flag;
+				break;
+			}
+		}
+		catch(const char* exp){
+			std::cout<<exp<<'\n';
 		}
 
 	} while(exit_flag);
