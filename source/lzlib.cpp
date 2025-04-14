@@ -89,7 +89,39 @@ void lzlib::codeLZSS(const std::string& _str, const int& dict_size, const int& b
 }
 
 void lzlib::codeLZ78(const std::string& _str){
-	std::cout<<"LZ78";
+	size_t len=_str.length();
+
+	if(len==0) throw "empty string";
+
+	std::vector<std::string> dict;
+	dict.push_back("");
+	std::string temp_str="";
+	int number_str=1, find_index=0, temp=0;
+
+	std::cout<<"# | Dictionary | Code\n";
+	std::cout<<"0| | --\n";
+	for(size_t i=0;i<len;++i){
+		temp_str+=_str[i];
+		temp=0;
+
+		for(int j=0;j<dict.size();++j){
+			if(dict[j]!=temp_str) continue;
+			temp=j;
+		}
+
+		if(temp!=0){
+			find_index=temp;
+			continue;
+		}
+
+		std::cout<<number_str<<'|'<<temp_str<<'|'<<"<"<<find_index<<",'"<<temp_str.back()<<"'>\n";
+		dict.push_back(temp_str);
+		temp_str.clear();
+		find_index=0;
+		++number_str;
+	}
+
+	if(temp_str.length()!=0 && find_index!=0) std::cout<<number_str<<"| |<"<<find_index<<",'eos'>\n";
 }
 
 void lzlib::codeLZW(){
