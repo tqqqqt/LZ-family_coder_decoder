@@ -104,16 +104,19 @@ void lzlib::codeLZ78(const std::string& _str){
 		temp_str+=_str[i];
 		temp=0;
 
+		// try find combination in dictionary
 		for(int j=0;j<dict.size();++j){
 			if(dict[j]!=temp_str) continue;
 			temp=j;
 		}
 
+		// go to next symbol if find in dictionary
 		if(temp!=0){
 			find_index=temp;
 			continue;
 		}
 
+		// added new combination to dictionary
 		std::cout<<number_str<<'|'<<temp_str<<'|'<<"<"<<find_index<<",'"<<temp_str.back()<<"'>\n";
 		dict.push_back(temp_str);
 		temp_str.clear();
