@@ -8,7 +8,7 @@ int main(){
 	int exit_flag=1, input=0, buffer_size=4, dictionary_size=8;
 
 	do{
-		std::cout<<"\ncurent string - ["<<code_string<<"]\n";
+		std::cout<<"\ncurrent string - ["<<code_string<<"]\n";
 		std::cout<<"current buffer size "<<buffer_size<<", current dictionary size "<<dictionary_size<<'\n';
 		ilib::inputMenu(input);
 

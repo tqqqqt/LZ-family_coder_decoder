@@ -11,7 +11,7 @@ void ilib::inputMenu(int& _input){
 			temp=std::stoi(input);
 		}
 		catch(std::exception){
-			std::cout<<" incorect input\n \n";
+			std::cout<<" incorrect input\n \n";
 			continue;
 		}
 		if(temp>=1 && temp<=8) break;
@@ -44,7 +44,7 @@ void ilib::changeSize(const std::string& _name, int& _size){
 			size=std::stoi(input);
 		}
 		catch(std::exception){
-			std::cout<<" incorect input\n \n";
+			std::cout<<" incorrect input\n \n";
 			continue;
 		}
 		if(size>0) break;
