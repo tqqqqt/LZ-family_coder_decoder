@@ -170,3 +170,19 @@ void lzlib::codeLZW(const std::string& _str){
 
 	if(find_index!=0) std::cout<<255+curent_num_str<<"| |"<<255+find_index+1<<'\n';
 }
+
+void lzlib::decodeLZ77(const string& _file, const int& dict_size, const int& buffer_size){
+
+}
+
+void lzlib::decodeLZSS(){
+
+}
+
+void lzlib::decodeLZ78(){
+
+}
+
+void lzlib::decodeLZW(){
+	
+}
