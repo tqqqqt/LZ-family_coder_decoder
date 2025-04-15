@@ -173,7 +173,7 @@ void lzlib::codeLZW(const std::string& _str){
 
 void lzlib::decodeLZ77(const std::string& _file, const int& dict_size){
 	std::ifstream file(_file);
-	std::string file_line="", dict="";
+	std::string file_line="", result="";
 	int current_part=0, index=0, count_symb=0, dict_index=0;
 	char symb=' ';
 
@@ -182,8 +182,10 @@ void lzlib::decodeLZ77(const std::string& _file, const int& dict_size){
 		index=0;
 		count_symb=0;
 
+		// read line
 		size_t len=file_line.length();
 		for(size_t i=0;i<len;++i){
+			// check border symbols
 			if(file_line[i]=='<' && current_part==0){
 				current_part=1;
 				continue;
@@ -194,38 +196,53 @@ void lzlib::decodeLZ77(const std::string& _file, const int& dict_size){
 			}
 			if(file_line[i]=='>' && current_part==3) current_part=4;
 
+			// check exceptions
 			if(current_part==0) throw "incorect string";
 			if((current_part==1 || current_part==2) && !(file_line[i]>='0' && file_line[i]<='9')) throw "incorect symbol, not num";
 			if(current_part==3 && symb!=' ') throw "incorect add symbol";
 			
+			// check step and do smth
 			if(current_part==1) index=index*10+(file_line[i]-'0');
 			else if(current_part==2) count_symb=count_symb*10+(file_line[i]-'0');
 			else if(current_part==3) symb=file_line[i];
 			else{
 				std::cout<<'<'<<index<<','<<count_symb<<','<<symb<<"> --> ";
-				if(index>dict_size) throw "index out of range";
-				if(count_symb>(dict.length()-dict_index)) throw "count symb is out of range";
 
-				if(dict.length()!=0) dict+=dict.substr(dict_index+index,count_symb);
-				dict+=symb;
+				if(index>dict_size) throw "index out of range";
+				if(count_symb>(result.length()-dict_index)) throw "count symb is out of range";
+
+				if(result.length()!=0) result+=result.substr(dict_index+index,count_symb);
+				result+=symb;
 
 				current_part=0;
 				index=0;
 				count_symb=0;
 				symb=' ';
 
-				if(dict.length()>dict_size) dict_index=dict.length()-dict_size;
+				// move dictionary index if need
+				if(result.length()>dict_size) dict_index=result.length()-dict_size;
 
-				std::cout<<dict<<'\n';
+				std::cout<<result<<'\n';
 			}
 		}
 	}
+
 	file.close();
-	std::cout<<" Decode result ==> "<<dict<<'\n';
+	std::cout<<" Decode result ==> "<<result<<'\n';
 }
 
-void lzlib::decodeLZSS(){
+void lzlib::decodeLZSS(const std::string& _file, const int& dict_size){
+	std::ifstream file(_file);
+	std::string file_line="", result="";
+	int current_part=0, index=0, count_symb=0, dict_index=0;
+	char symb=' ';
 
+	while(std::getline(file,file_line)){
+
+	}
+
+	file.close();
+	std::cout<<" Decode LZSS result ==> "<<result<<'\n';
 }
 
 void lzlib::decodeLZ78(){
