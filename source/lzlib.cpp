@@ -227,6 +227,7 @@ void lzlib::decodeLZ77(const std::string& _file, const int& dict_size){
 			}
 		}
 
+		// check what all complete 
 		if(current_part!=0) throw "incorrect string";
 	}
 
@@ -267,11 +268,13 @@ void lzlib::decodeLZSS(const std::string& _file, const int& dict_size){
 			// check exceptions
 			if(current_part==0) throw "incorrect string";
 
+			// check step and do smth
 			if(current_part==2){
 				std::cout<<"0,"<<file_line[i]<<" --> ";
 
 				result+=file_line[i];
 
+				// move dictionary index
 				if(result.length()>dict_size) dict_index=result.length()-dict_size;
 
 				current_part=0;
@@ -288,6 +291,7 @@ void lzlib::decodeLZSS(const std::string& _file, const int& dict_size){
 
 				result+=result.substr(dict_index+index,count_symb);
 
+				// move dictionary index
 				if(result.length()>dict_size) dict_index=result.length()-dict_size;
 
 				current_part=0;
@@ -298,6 +302,7 @@ void lzlib::decodeLZSS(const std::string& _file, const int& dict_size){
 			}
 		}
 
+		// check what all complete
 		if(current_part!=0) throw "incorrect string";
 	}
 
