@@ -49,7 +49,7 @@ int main(){
 				break;
 			case 11:
 				ilib::inputFile(file_decode);
-				izlib::decodeLZW(file_decode);
+				lzlib::decodeLZW(file_decode);
 				break;
 			case 12:
 				--exit_flag;
