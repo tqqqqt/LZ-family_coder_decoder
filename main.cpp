@@ -4,7 +4,7 @@
 #include "source/lzlib.h"
 
 int main(){
-	std::string code_string="";
+	std::string code_string="", file_decode="";
 	int exit_flag=1, input=0, buffer_size=4, dictionary_size=8;
 
 	do{
@@ -36,6 +36,22 @@ int main(){
 				lzlib::codeLZW(code_string);
 				break;
 			case 8:
+				ilib::inputFile(file_decode);
+				//
+				break;
+			case 9:
+				ilib::inputFile(file_decode);
+				//
+				break;
+			case 10:
+				ilib::inputFile(file_decode);
+				//
+				break;
+			case 11:
+				ilib::inputFile(file_decode);
+				//
+				break;
+			case 12:
 				--exit_flag;
 				break;
 			}
