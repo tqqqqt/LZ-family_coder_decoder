@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
 
 namespace lzlib{
 	void codeLZ77(const std::string&, const int&, const int&);
@@ -11,7 +12,7 @@ namespace lzlib{
 	void codeLZ78(const std::string&);
 	void codeLZW(const std::string&);
 
-	void decodeLZ77(const std::string&, const int&, const int&);
+	void decodeLZ77(const std::string&, const int&);
 	void decodeLZSS();
 	void decodeLZ78();
 	void decodeLZW();
