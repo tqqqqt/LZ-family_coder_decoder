@@ -171,8 +171,57 @@ void lzlib::codeLZW(const std::string& _str){
 	if(find_index!=0) std::cout<<255+curent_num_str<<"| |"<<255+find_index+1<<'\n';
 }
 
-void lzlib::decodeLZ77(const string& _file, const int& dict_size, const int& buffer_size){
+void lzlib::decodeLZ77(const std::string& _file, const int& dict_size){
+	std::ifstream file(_file);
+	std::string file_line="", dict="";
+	int current_part=0, index=0, count_symb=0, dict_index=0;
+	char symb=' ';
 
+	while(std::getline(file,file_line)){
+		current_part=0;
+		index=0;
+		count_symb=0;
+
+		size_t len=file_line.length();
+		for(size_t i=0;i<len;++i){
+			if(file_line[i]=='<' && current_part==0){
+				current_part=1;
+				continue;
+			}
+			if(file_line[i]==',' && (current_part==1 || current_part==2)){
+				current_part+=1;
+				continue;
+			}
+			if(file_line[i]=='>' && current_part==3) current_part=4;
+
+			if(current_part==0) throw "incorect string";
+			if((current_part==1 || current_part==2) && !(file_line[i]>='0' && file_line[i]<='9')) throw "incorect symbol, not num";
+			if(current_part==3 && symb!=' ') throw "incorect add symbol";
+			
+			if(current_part==1) index=index*10+(file_line[i]-'0');
+			else if(current_part==2) count_symb=count_symb*10+(file_line[i]-'0');
+			else if(current_part==3) symb=file_line[i];
+			else{
+				std::cout<<'<'<<index<<','<<count_symb<<','<<symb<<"> --> ";
+				if(index>dict_size) throw "index out of range";
+				if(count_symb>(dict.length()-dict_index)) throw "count symb is out of range";
+
+				if(dict.length()!=0) dict+=dict.substr(dict_index+index,count_symb);
+				dict+=symb;
+
+				current_part=0;
+				index=0;
+				count_symb=0;
+				symb=' ';
+
+				if(dict.length()>dict_size) dict_index=dict.length()-dict_size;
+
+				std::cout<<dict<<'\n';
+			}
+		}
+	}
+	file.close();
+	std::cout<<" Decode result ==> "<<dict<<'\n';
 }
 
 void lzlib::decodeLZSS(){
@@ -184,5 +233,5 @@ void lzlib::decodeLZ78(){
 }
 
 void lzlib::decodeLZW(){
-	
+
 }
