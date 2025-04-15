@@ -13,7 +13,7 @@ namespace lzlib{
 	void codeLZW(const std::string&);
 
 	void decodeLZ77(const std::string&, const int&);
-	void decodeLZSS();
+	void decodeLZSS(const std::string&, const int&);
 	void decodeLZ78();
 	void decodeLZW();
 }
