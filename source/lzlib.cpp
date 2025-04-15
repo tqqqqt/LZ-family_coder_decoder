@@ -50,7 +50,7 @@ void lzlib::codeLZSS(const std::string& _str, const int& dict_size, const int& b
 
 	if(len==0) throw "empty string";
 
-	std::string dict;
+	std::string dict="";
 	int buffer_index=0, index=0, count_symb=0;
 	size_t temp=0;
 
@@ -105,7 +105,7 @@ void lzlib::codeLZ78(const std::string& _str){
 		temp=0;
 
 		// try find combination in dictionary
-		for(int j=0;j<dict.size();++j){
+		for(size_t j=0;j<dict.size();++j){
 			if(dict[j]!=temp_str) continue;
 			temp=j;
 		}
@@ -146,7 +146,7 @@ void lzlib::codeLZW(const std::string& _str){
 		if(temp_str.length()==1) continue;
 
 		// try find combination in dict
-		for(int j=0;j<dict.size();++j){
+		for(size_t j=0;j<dict.size();++j){
 			if(dict[j]!=temp_str) continue;
 			temp=j;
 		}
@@ -169,4 +169,294 @@ void lzlib::codeLZW(const std::string& _str){
 	}
 
 	if(find_index!=0) std::cout<<255+curent_num_str<<"| |"<<255+find_index+1<<'\n';
+}
+
+void lzlib::decodeLZ77(const std::string& _file, const int& dict_size){
+	std::ifstream file(_file);
+	std::string file_line="", result="";
+	int current_part=0, index=0, count_symb=0, dict_index=0;
+	char symb=' ';
+
+	while(std::getline(file,file_line)){
+		current_part=0;
+		index=0;
+		count_symb=0;
+		symb=' ';
+
+		// read line
+		size_t len=file_line.length();
+		for(size_t i=0;i<len;++i){
+			// check border symbols
+			if(file_line[i]=='<' && current_part==0){
+				current_part=1;
+				continue;
+			}
+			if(file_line[i]==',' && (current_part==1 || current_part==2)){
+				current_part+=1;
+				continue;
+			}
+			if(file_line[i]=='>' && current_part==3) current_part=4;
+
+			// check exceptions
+			if(current_part==0) throw "incorrect string";
+			if((current_part==1 || current_part==2) && !(file_line[i]>='0' && file_line[i]<='9')) throw "incorrect symbol, not num";
+			if(current_part==3 && symb!=' ') throw "incorrect add symbol";
+			
+			// check step and do smth
+			if(current_part==1) index=index*10+(file_line[i]-'0');
+			else if(current_part==2) count_symb=count_symb*10+(file_line[i]-'0');
+			else if(current_part==3) symb=file_line[i];
+			else{
+				std::cout<<'<'<<index<<','<<count_symb<<','<<symb<<"> --> ";
+
+				if(index>dict_size) throw "index out of range";
+				if(count_symb>(static_cast<int>(result.length())-dict_index)) throw "count symb is out of range";
+
+				if(result.length()!=0) result+=result.substr(dict_index+index,count_symb);
+				result+=symb;
+
+				current_part=0;
+				index=0;
+				count_symb=0;
+				symb=' ';
+
+				// move dictionary index if need
+				if(static_cast<int>(result.length())>dict_size) dict_index=result.length()-dict_size;
+
+				std::cout<<result<<'\n';
+			}
+		}
+
+		// check what all complete 
+		if(current_part!=0) throw "incorrect string";
+	}
+
+	file.close();
+	std::cout<<" Decode LZ77 result ==> "<<result<<'\n';
+}
+
+void lzlib::decodeLZSS(const std::string& _file, const int& dict_size){
+	std::ifstream file(_file);
+	std::string file_line="", result="";
+	int current_part=0, index=0, count_symb=0, dict_index=0;
+
+	while(std::getline(file,file_line)){
+		current_part=0;
+		index=0;
+		count_symb=0;
+
+		size_t len=file_line.length();
+		for(size_t i=0;i<len;++i){
+			if(file_line[i]=='0' && current_part==0){
+				current_part=1;
+				continue;
+			}
+			if(file_line[i]=='1' && current_part==0){
+				current_part=3;
+				continue;
+			}
+			if(file_line[i]==',' && (current_part==1 || current_part==3 || current_part==5)){
+				current_part+=1;
+				continue;
+			}
+			if(file_line[i]=='<' && current_part==4){
+				current_part=5;
+				continue;
+			}
+			if(file_line[i]=='>' && current_part==6) current_part=7;
+
+			// check exceptions
+			if(current_part==0) throw "incorrect string";
+
+			// check step and do smth
+			if(current_part==2){
+				std::cout<<"0,"<<file_line[i]<<" --> ";
+
+				result+=file_line[i];
+
+				// move dictionary index
+				if(static_cast<int>(result.length())>dict_size) dict_index=result.length()-dict_size;
+
+				current_part=0;
+
+				std::cout<<result<<'\n';
+			}
+			else if(current_part==5) index=index*10+(file_line[i]-'0');
+			else if(current_part==6) count_symb=count_symb*10+(file_line[i]-'0');
+			if(current_part==7){
+				std::cout<<"1,<"<<index<<','<<count_symb<<"> --> ";
+
+				if(index>dict_size) throw "index out of range";
+				if(count_symb>(static_cast<int>(result.length())-dict_index)) throw "count symb is out of range";
+
+				result+=result.substr(dict_index+index,count_symb);
+
+				// move dictionary index
+				if(static_cast<int>(result.length())>dict_size) dict_index=result.length()-dict_size;
+
+				current_part=0;
+				index=0;
+				count_symb=0;
+
+				std::cout<<result<<'\n';
+			}
+		}
+
+		// check what all complete
+		if(current_part!=0) throw "incorrect string";
+	}
+
+	file.close();
+	std::cout<<" Decode LZSS result ==> "<<result<<'\n';
+}
+
+void lzlib::decodeLZ78(const std::string& _file){
+	std::ifstream file(_file);
+	std::string file_line="", result="";
+	std::vector<std::string> dict;
+	dict.push_back("");
+	int index=0, current_part=0, symb=-1;
+
+	while(std::getline(file,file_line)){
+		current_part=0;
+		index=0;
+		symb=-1;
+
+		size_t len=file_line.length();
+		for(size_t i=0;i<len;++i){
+			if(file_line[i]=='<' && current_part==0){
+				current_part=1;
+				continue;
+			}
+			if(file_line[i]==',' && current_part==1){
+				current_part=2;
+				continue;
+			}
+			if(file_line[i]=='>' && current_part==2) current_part=3;
+
+			// check exceptions
+			if(current_part==0) throw "incorrect string";
+			if(current_part==2 && symb!=-1) throw "incorrect string";
+
+			// check step and do smth
+			if(current_part==1) index=index*10+(file_line[i]-'0');
+			else if(current_part==2) symb=file_line[i];
+			else{
+				std::cout<<'<'<<index<<','<<static_cast<char>(symb)<<"> --> ";
+				if(index>=static_cast<int>(dict.size())) throw "index is out of range";
+
+				dict.push_back(dict[index]+static_cast<char>(symb));
+				result+=dict.back();
+
+				index=0;
+				symb=-1;
+				current_part=0;
+
+				std::cout<<result<<'\n';
+			}
+		}
+
+		// check what all complete
+		if(current_part!=0) throw "incorect string";
+	}
+
+	file.close();
+	std::cout<<" Decode LZ78 result ==> "<<result<<'\n';
+}
+
+void lzlib::decodeLZW(const std::string& _file){
+	std::ifstream file(_file);
+	std::string file_line="", result="";
+	std::vector<std::string> dict;
+	int current_part=0, symb=-1, index=0, need_complete_index=0;
+
+	while(std::getline(file,file_line)){
+		current_part=0;
+		symb=-1;
+		index=0;
+
+		size_t len=file_line.length();
+		for(size_t i=0;i<len;++i){
+			if(file_line[i]=='<' && current_part==0){
+				current_part=1;
+				continue;
+			}
+			if(file_line[i]==',' && current_part==1){
+				current_part=2;
+				continue;
+			}
+			if(file_line[i]=='>' && (current_part==1 || current_part==2)) current_part=3;
+
+			// check exceptions
+			if(current_part==0) throw "incorrect string";
+			if(current_part==2 && symb!=-1) throw "incorrect string";
+
+			// check part 
+			if(current_part==1) index=index*10+(file_line[i]-'0');
+			else if(current_part==2) symb=file_line[i];
+			// add only one symbol
+			else if(current_part==3 && index==0){
+				std::cout<<"<0,"<<static_cast<char>(symb)<<"> --> ";
+
+				result+=static_cast<char>(symb);
+
+				// if it is first found symbol
+				if(dict.size()==0){
+					dict.push_back("");
+					dict.back()+=static_cast<char>(symb);
+				}
+				// if it not first
+				else{
+					dict[need_complete_index]+=static_cast<char>(symb);
+
+					// check what currect str uniq
+					int uniq_str=0;
+					for(size_t j=0;j<dict.size();++j){
+						if(static_cast<int>(j)==need_complete_index) continue;
+						if(dict[j]==dict[need_complete_index]) uniq_str+=1;
+					}
+
+					// if uniq start create new dict word
+					if(uniq_str==0){
+						dict.push_back("");
+						dict.back()+=dict[need_complete_index].back();
+						need_complete_index=dict.size()-1;
+					}
+				}
+
+				current_part=0;
+				index=0;
+				symb=-1;
+				std::cout<<result<<'\n';
+			}
+			// add str from dictionary
+			else if(current_part==3 && index!=0){
+				std::cout<<'<'<<index<<"> --> ";
+
+				if((index-255-1)>=static_cast<int>(dict.size())) throw "index of str is out of bound";
+
+				// check what dictionary string complete or not
+				if((index-255-1)==need_complete_index) dict[need_complete_index]+=dict[need_complete_index];
+				else dict[need_complete_index]+=dict[index-255-1][0];
+
+				// start create new dictionary word
+				dict.push_back("");
+				dict.back()+=dict[index-255-1];
+				result+=dict[index-255-1];
+				need_complete_index=dict.size()-1;
+
+				current_part=0;
+				index=0;
+				symb=-1;
+
+				std::cout<<result<<'\n';
+			}
+		}
+
+		// check what all complete
+		if(current_part!=0) throw "incorrect string";
+	}
+
+	file.close();
+	std::cout<<" Decode LZW result ==> "<<result<<'\n';
 }
