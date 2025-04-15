@@ -37,11 +37,11 @@ int main(){
 				break;
 			case 8:
 				ilib::inputFile(file_decode);
-				//
+				lzlib::decodeLZ77(file_decode,dictionary_size);
 				break;
 			case 9:
 				ilib::inputFile(file_decode);
-				//
+				lzlib::decodeLZSS(file_decode,dictionary_size);
 				break;
 			case 10:
 				ilib::inputFile(file_decode);
