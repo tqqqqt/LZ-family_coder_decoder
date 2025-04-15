@@ -45,7 +45,7 @@ int main(){
 				break;
 			case 10:
 				ilib::inputFile(file_decode);
-				//
+				lzlib::decodeLZ78(file_decode);
 				break;
 			case 11:
 				ilib::inputFile(file_decode);
