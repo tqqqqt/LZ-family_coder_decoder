@@ -5,7 +5,9 @@ void ilib::inputMenu(int& _input){
 	int temp=0;
 
 	while(1){
-		std::cout<<" 1 - change code string\n 2 - change buffer size\n 3 - change dictionary size\n 4 - code LZ77\n 5 - code LZSS\n 6 - code LZ78\n 7 - code LZW\n 8 - exit\n--> ";
+		std::cout<<" 1 - change code string\n 2 - change buffer size\n 3 - change dictionary size\n";
+		std::cout<<" 4 - encode LZ77\n 5 - encode LZSS\n 6 - encode LZ78\n 7 - encode LZW\n";
+		std::cout<<" 8 - decode LZ77\n 9 - decode LZSS\n 10 - decode LZ78\n 11 - decode LZW\n 12 - exit\n--> ";
 		std::getline(std::cin,input);
 		try{
 			temp=std::stoi(input);
@@ -14,7 +16,7 @@ void ilib::inputMenu(int& _input){
 			std::cout<<" incorrect input\n \n";
 			continue;
 		}
-		if(temp>=1 && temp<=8) break;
+		if(temp>=1 && temp<=12) break;
 	}
 
 	_input=temp;
@@ -51,4 +53,19 @@ void ilib::changeSize(const std::string& _name, int& _size){
 	}
 
 	_size=size;
+}
+
+void ilib::inputFile(std::string& _file){
+	std::string input="";
+	while(1){
+		std::cout<<"file name or path --> ";
+		std::getline(std::cin,input);
+
+		std::ifstream file(input);
+		if(file.is_open()==false) continue;
+		file.close();
+		break;
+	}
+
+	_file=input;
 }
