@@ -181,6 +181,7 @@ void lzlib::decodeLZ77(const std::string& _file, const int& dict_size){
 		current_part=0;
 		index=0;
 		count_symb=0;
+		symb=' ';
 
 		// read line
 		size_t len=file_line.length();
@@ -197,9 +198,9 @@ void lzlib::decodeLZ77(const std::string& _file, const int& dict_size){
 			if(file_line[i]=='>' && current_part==3) current_part=4;
 
 			// check exceptions
-			if(current_part==0) throw "incorect string";
-			if((current_part==1 || current_part==2) && !(file_line[i]>='0' && file_line[i]<='9')) throw "incorect symbol, not num";
-			if(current_part==3 && symb!=' ') throw "incorect add symbol";
+			if(current_part==0) throw "incorrect string";
+			if((current_part==1 || current_part==2) && !(file_line[i]>='0' && file_line[i]<='9')) throw "incorrect symbol, not num";
+			if(current_part==3 && symb!=' ') throw "incorrect add symbol";
 			
 			// check step and do smth
 			if(current_part==1) index=index*10+(file_line[i]-'0');
@@ -225,20 +226,79 @@ void lzlib::decodeLZ77(const std::string& _file, const int& dict_size){
 				std::cout<<result<<'\n';
 			}
 		}
+
+		if(current_part!=0) throw "incorrect string";
 	}
 
 	file.close();
-	std::cout<<" Decode result ==> "<<result<<'\n';
+	std::cout<<" Decode LZ77 result ==> "<<result<<'\n';
 }
 
 void lzlib::decodeLZSS(const std::string& _file, const int& dict_size){
 	std::ifstream file(_file);
 	std::string file_line="", result="";
 	int current_part=0, index=0, count_symb=0, dict_index=0;
-	char symb=' ';
 
 	while(std::getline(file,file_line)){
+		current_part=0;
+		index=0;
+		count_symb=0;
 
+		size_t len=file_line.length();
+		for(size_t i=0;i<len;++i){
+			if(file_line[i]=='0' && current_part==0){
+				current_part=1;
+				continue;
+			}
+			if(file_line[i]=='1' && current_part==0){
+				current_part=3;
+				continue;
+			}
+			if(file_line[i]==',' && (current_part==1 || current_part==3 || current_part==5)){
+				current_part+=1;
+				continue;
+			}
+			if(file_line[i]=='<' && current_part==4){
+				current_part=5;
+				continue;
+			}
+			if(file_line[i]=='>' && current_part==6) current_part=7;
+
+			// check exceptions
+			if(current_part==0) throw "incorrect string";
+
+			if(current_part==2){
+				std::cout<<"0,"<<file_line[i]<<" --> ";
+
+				result+=file_line[i];
+
+				if(result.length()>dict_size) dict_index=result.length()-dict_size;
+
+				current_part=0;
+
+				std::cout<<result<<'\n';
+			}
+			else if(current_part==5) index=index*10+(file_line[i]-'0');
+			else if(current_part==6) count_symb=count_symb*10+(file_line[i]-'0');
+			if(current_part==7){
+				std::cout<<"1,<"<<index<<','<<count_symb<<"> --> ";
+
+				if(index>dict_size) throw "index out of range";
+				if(count_symb>(result.length()-dict_index)) throw "count symb is out of range";
+
+				result+=result.substr(dict_index+index,count_symb);
+
+				if(result.length()>dict_size) dict_index=result.length()-dict_size;
+
+				current_part=0;
+				index=0;
+				count_symb=0;
+
+				std::cout<<result<<'\n';
+			}
+		}
+
+		if(current_part!=0) throw "incorrect string";
 	}
 
 	file.close();
